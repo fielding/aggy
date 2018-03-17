@@ -87,11 +87,10 @@ const duplicate = (commit, index, self) =>
 
 const getUpdatedHistory = (repositoryPaths, userEmail) =>
   Promise.all([
-      getPrevious(untildify(DB)),
-      ...repoHistories(repositoryPaths, userEmail),
-    ])
-    .then(history => unnest(history).filter(duplicate))
-    .catch(err => console.log(err))
+    getPrevious(untildify(DB)),
+    ...repoHistories(repositoryPaths, userEmail),
+  ])
+    .then(history => [].concat(...history).filter(duplicate));
 
 const writeUpdatedHistory = ( repositoryPaths, userEmail ) =>
   getUpdatedHistory(repositoryPaths, userEmail)
