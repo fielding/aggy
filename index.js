@@ -65,7 +65,7 @@ const repoHistories = (repositoryPaths, userEmail) =>
         )
       )
       .catch(err => {
-        console.log(err);
+        console.error(`Can't get git log for ${path} :: ${err.message})`);
         return [];
       })
   );
