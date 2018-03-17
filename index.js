@@ -74,17 +74,13 @@ const repoHistories = (repositoryPaths, userEmail) =>
 // then a change in wording on a few things is in order.
 
 
-const getPrevious = db => {
-  let res;
-  if (existsSync(db)){
-    res = readFileAsync(db, { encoding: 'utf8' })
-      .then(contents => JSON.parse(contents))
-      .catch(err => console.log(err));
-  } else {
-    res = [];
-  }
-  return res;
-};
+const getPrevious = db =>
+  readFileAsync(db, { encoding: 'utf8' })
+    .then(contents => JSON.parse(contents))
+    .catch(() => {
+      console.error(`No previous history found at ${db}`);
+      return [];
+    });
 
 const duplicate = (commit, index, self) =>
   index === self.findIndex(c => (
