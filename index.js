@@ -9,8 +9,6 @@ const { join } = require('path');
 const { hostname } = require('os');
 const { promisify } = require('util');
 const untildify = require('untildify');
-const uuid = require('uuid/v4');
-const { unnest } = require('ramda');
 const git2json = require('@fabien0102/git2json');
 
 const readFileAsync = promisify(readFile);
@@ -85,7 +83,7 @@ const getPrevious = db =>
 const duplicate = (commit, index, self) =>
   index === self.findIndex(c => (
     c.uuid === commit.uuid && c.timestamp === commit.timestamp
-  ))
+  ));
 
 const getUpdatedHistory = (repositoryPaths, userEmail) =>
   Promise.all([
@@ -97,7 +95,6 @@ const getUpdatedHistory = (repositoryPaths, userEmail) =>
 
 const writeUpdatedHistory = ( repositoryPaths, userEmail ) =>
   getUpdatedHistory(repositoryPaths, userEmail)
-    /* .then(history => console.log(JSON.stringify(history, null, '  '))); */
     .then(history => writeFileAsync(untildify(DB), JSON.stringify(history,
       null, '  ')));
 //
