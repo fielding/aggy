@@ -55,7 +55,7 @@ const repoHistories = (repositoryPaths, userEmail) =>
         .map(commit =>
           Object.assign(
             {
-              timestamp: commit.author.timestamp / 1000,
+              timestamp: commit.author.timestamp,
               dataType: 'activity-hack',
               dataSource: `git@${hostname}`,
               uuid: uuidFromSha1(commit.hash),
