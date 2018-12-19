@@ -1,5 +1,8 @@
+// TODO: fix the sync/async inconsistencies and rewrite
+// exclusively using promises
 const {
   lstatSync,
+  mkdir,
   readdirSync,
   existsSync,
   readFile,
@@ -35,10 +38,19 @@ const expandRepoPaths = paths =>
     if (isRepository(p)) {
       res = [p];
     } else {
-      const subdirs = readdirSync(p)
-        .map(name => join(p, name))
-        .filter(isDirectory && isRepository);
-      res = subdirs;
+      try {
+        res = readdirSync(p)
+          .map(name => join(p, name))
+          .filter(isDirectory && isRepository);
+      } catch (err) {
+        if (err.code === 'ENOENT') {
+          console.error(`Skipping "${p}", because the directory was not found! `);
+          res = [];
+        } else {
+          throw err;
+        }
+      }
+
     }
 
     return [...acc, ...res];
@@ -77,6 +89,10 @@ const getPrevious = db =>
     .then(contents => JSON.parse(contents))
     .catch(() => {
       console.error(`No previous history found at ${db}`);
+      // TODO: fix this and other sync/async inconsistencies
+      mkdir(db.substr(0, db.lastIndexOf('/')), { recursive: true }, err => {
+        if (err) throw err;
+      });
       return [];
     });
 
