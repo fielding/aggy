@@ -3,6 +3,7 @@ const { join, normalize, dirname, resolve  } = require('path');
 const { hostname } = require('os');
 const untildify = require('untildify');
 const git2json = require('@fabien0102/git2json');
+const ora = require('ora');
 
 // CONSTANTS
 const repoPaths = ['~/etc', '~/src/hack', '/Volumes/stuff/cloud/Dropbox/work'];
@@ -116,4 +117,4 @@ const writeToDB = history =>
   mkdir(dirname(dbPath), { recursive: true })
     .then(writeFile(dbPath, JSON.stringify(history, null, '  ')));
 
-writeUpdatedHistory( repos, user );
+ora.promise(getUpdatedHistory(repoPaths, user).then(writeToDB), { text: 'Updating Aggregate Git Commit History', spinner: 'pong' });
