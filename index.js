@@ -33,7 +33,7 @@ const flatten = (arr, depth = 1) =>
 
 const duplicate = (commit, index, self) =>
   index === self.findIndex(c => (
-    c.dataSource === commit.dataSource && c.uuid === commit.uuid
+    c.uuid === commit.uuid && c.timestamp === commit.timestamp
   ));
 
 const recurse = path =>
