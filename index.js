@@ -117,4 +117,4 @@ const writeToDB = history =>
   mkdir(dirname(dbPath), { recursive: true })
     .then(writeFile(dbPath, JSON.stringify(history, null, '  ')));
 
-ora.promise(getUpdatedHistory(repoPaths, user).then(writeToDB), { text: 'Updating Aggregate Git Commit History', spinner: 'pong' });
+ora.promise(getUpdatedHistory(repoPaths, user).then(writeToDB), { text: 'Updating Aggregate Git Commit History. ', spinner: 'pong' });
