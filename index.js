@@ -5,14 +5,12 @@ const untildify = require('untildify');
 const git2json = require('@fabien0102/git2json');
 const ora = require('ora');
 
-// CONSTANTS
-const repoPaths = ['~/etc', '~/src/hack', '/Volumes/stuff/cloud/Dropbox/work'];
-const user = 'fielding@justfielding.com';
-const DB = '~/.local/share/quantified-self/commits.json';
-const dbPath = normalize(untildify(DB));
+const { AUTHOR, STORE, REPOS } = require('./config.js');
+
+const dbPath = normalize(untildify(STORE));
 
 const isErrorNotFound = err => err.code === 'ENOENT';
-const isUser = (commit, userEmail) => commit.author.email === userEmail;
+const isUser = (commit, authorEmail) => commit.author.email === authorEmail;
 
 const uuidFromSha1 = hash =>
   hash.substring(0, 8) +
@@ -76,13 +74,13 @@ const findRepositories = paths =>
   Promise.all(normalizePaths(paths).map(path => isRepository(path)))
     .then(flatten);
 
-const getRepositoryHistories = (repositoryPaths, userEmail) =>
+const getRepositoryHistories = (repositoryPaths, authorEmail) =>
   findRepositories(repositoryPaths)
     .then(repos => Promise.all(repos.map(path =>
       git2json
         .run({ path })
         .then(json => json
-          .filter(commit => isUser(commit, userEmail))
+          .filter(commit => isUser(commit, authorEmail))
           .map(commit =>
             Object.assign(
               {
@@ -107,10 +105,10 @@ const getPreviousHistory = db =>
       return [];
     });
 
-const getUpdatedHistory = (repositoryPaths, userEmail) =>
+const getUpdatedHistory = (repositoryPaths, authorEmail) =>
   Promise.all([
     getPreviousHistory(dbPath),
-    getRepositoryHistories(repositoryPaths, userEmail),
+    getRepositoryHistories(repositoryPaths, authorEmail),
   ])
     .then(flatten)
     .then(history => [].concat(...history).filter(duplicate));
@@ -119,4 +117,4 @@ const writeToDB = history =>
   mkdir(dirname(dbPath), { recursive: true })
     .then(writeFile(dbPath, JSON.stringify(history, null, '  ')));
 
-ora.promise(getUpdatedHistory(repoPaths, user).then(writeToDB), { text: 'Updating Aggregate Git Commit History. ', spinner: 'pong' });
+ora.promise(getUpdatedHistory(REPOS, AUTHOR).then(writeToDB), { text: 'Updating Aggregate Git Commit History. ', spinner: 'pong' });
