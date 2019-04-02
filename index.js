@@ -49,9 +49,11 @@ const recurse = path =>
         });
       })))
     .then(results => results.filter(Boolean))
-    .then(flatten);
+    .then(flatten)
+    .catch(err => {
+      // TODO: error message
+    });
 
-// TODO: test to make sure that nested repositories are detected
 const isRepository = path =>
   stat(join(path, '.git'))
     .then(gPath => {
